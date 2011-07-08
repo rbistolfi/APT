@@ -1,0 +1,13 @@
+
+html { font-family: Sans-serif; font-size: 80%; color: #333333; }
+body { margin: 0px auto; width: 90% }
+h1 { font-size: 20px; color: #AAAAAA; }
+h2 { font-size: 40px; color: #666666; }
+video { margin: 15px 0px; border: solid #CCCCCC 3px; width: 100% }
+div#intro { float: right; width: 30%; margin: 15px 0px}
+div#video { float: left; width: 65% }
+div#comments { clear: both; }
+#comments li { list-style-type: square; color: #AAAAAA }
+li > p:first-child { color: #AAAAAA; font-weight: bold; }
+li p { color: #333333; }
+

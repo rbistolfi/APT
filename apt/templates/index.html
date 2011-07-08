@@ -1,0 +1,16 @@
+{% extends "main.html" %}
+
+{% block body %}
+
+<p>Presentacion - Texto que describe lpos objetivos del proyecto</p>
+
+<div id="event-list">
+  <h2>Eventos</h2>
+  <ul>
+  {% for event in events %}
+    <li>{{ event.date_start.isoformat() }} - {{ event.title }}</li>
+  {% endfor %}
+  </ul>
+</div>
+
+{% endblock %}

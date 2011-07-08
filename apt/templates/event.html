@@ -1,0 +1,32 @@
+{% extends "main.html" %}
+
+{% block body %}
+
+<h2>{{ event.title }}</h2>
+
+<div id="video">
+  <video src="{{ event.stream }}" autoplay="autoplay" preload="auto" controls="controls">
+    Necesitas un navegador con soporte para html5, como Firefox.
+  </video>
+</div>
+<div id="intro">
+  <p>{{ event.intro|safe }}</p>
+</div>
+
+<div id="comments">
+  <ul>
+  {% for comment in event.comments %}
+    <li>
+      <p>{{ comment["published"] }} - {{ comment["author"]|safe }}</p>
+      <p>{{ comment["text"]|safe }}</p>
+    </li>
+ {% endfor %}
+  </ul>
+</div>
+
+<script type="text/javascript">
+  Sijax.setRequestUri('/get_comments');
+  sjxComet.request('get_comments', [1, '{{ event.id }}'])
+</script>
+ 
+{% endblock %}
