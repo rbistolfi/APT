@@ -71,10 +71,14 @@ class APTEvent(Document):
         date = datetime.date(date_start.year, date_start.month, date_start.day)
         title = kwargs.get("title")
         doc_id = date.isoformat() + "-" + title
+        # Add an empty list for appending comments to it
+        kwargs["comments"] = []
         self = cls(**kwargs)
         self.id = doc_id
         return self
 
 
-database = Database("caleu-cheques")
+database = Database("apt")
 APTEvent.from_today.sync(database)
+APTEvent.in_progress.sync(database)
+APTEvent.past_events.sync(database)
