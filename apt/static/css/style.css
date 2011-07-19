@@ -4,12 +4,15 @@ body { margin: 0px auto; width: 90% }
 h1 { font-size: 20px; color: #AAAAAA; }
 h2 { font-size: 40px; color: #666666; }
 video { margin: 15px 0px; border: solid #CCCCCC 3px; width: 100% }
+hr { 1px; border: 1px solid #DDDDDD; margin: 20px 0; }
 div#intro { float: right; width: 30%; margin: 15px 0px}
 div#video { float: left; width: 65% }
 div#footer { clear: both; }
+div.flash p { margin: 1px; }
 ul { padding-left: 15px; }
 #comments li { list-style-type: square; color: #AAAAAA; padding: 2px }
 li > p:first-child { color: #AAAAAA; }
 li p { color: #333333; }
-.fading { background-color: LightYellow; }
-
+.fading, .flash { background-color: LightYellow; }
+.flash { margin: 3px; padding: 3px; border: 1px solid Yellow }
+input.openid { padding: 4px: margin: 2px; background-color: #DDDDDD; border: solid 1px #CCCCCC }

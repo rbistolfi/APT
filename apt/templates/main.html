@@ -9,7 +9,18 @@
   <div id="header">
     <h1>Astronomia para todos</h1>
     {% for message in get_flashed_messages() %}
-    <div class=flash>{{ message }}</div>
+    <div class="flash">
+      <p>
+	{% if g.user %}
+	{{ g.user.nickname or g.user.fullname or g.user.email }}: 
+	{% endif %}
+	{{ message }} | 
+	{% if g.user %}
+	<a href="{{ url_for('logout') }}">Logout</a> |
+	{% endif %}
+	<a style="cursor: pointer">[x]</a>
+      </p>
+    </div>
     {% endfor %}
   </div>
   <div id="body">
@@ -18,5 +29,11 @@
   <div id="footer">
   
   </div>
+  <script type="text/javascript">
+    $("div.flash a").click(
+      function () {
+        $("div.flash").slideUp().fadeOut();
+      });
+  </script>
 </body>
 </html>

@@ -77,6 +77,11 @@ class APTEvent(Document):
         self.id = doc_id
         return self
 
+    ## General
+
+    def comments_by_date(self):
+        return sorted(self.comments, key=lambda x: x["published"], reverse=True)
+
 
 database = Database("apt")
 APTEvent.from_today.sync(database)

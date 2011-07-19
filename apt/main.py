@@ -7,14 +7,73 @@
 ## Imports
 
 from flask import *
+from flaskext.openid import OpenID
 from apt import *
 import datetime, time, os
+
 
 ## Setup
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "asd"
+oid = OpenID(app, "./openid_store")
 
+
+## Hooks
+
+@app.before_request
+def lookup_current_user():
+    """Setup context for openid
+
+    """
+    g.user = None
+    print session
+    if 'openid' in session:
+        g.user = session["openid"]
+
+        
 ## View functions
+# User handling
+        
+@app.route('/login', methods=['GET', 'POST'])
+@oid.loginhandler
+def login():
+    if g.user is not None:
+        return redirect(oid.get_next_url())
+    if request.method == 'POST':
+        openid = request.form.get('openid')
+        if openid:
+            return oid.try_login(openid, ask_for=['email', 'fullname',
+                                                  'nickname'])
+    return render_template('login.html', next=oid.get_next_url(),
+                           error=oid.fetch_error())
+
+
+@oid.after_login
+def create_or_login(resp):
+    """Login handler for OpenID
+
+    """
+    session['openid'] = resp
+    user = resp
+    if user is not None:
+        flash(u'Successfully signed in')
+        g.user = user
+    print session
+    return redirect(oid.get_next_url()) 
+
+
+@app.route('/logout')
+def logout():
+    """Destroy the session
+
+    """
+    session.pop('openid', None)
+    flash(u'You were signed out')
+    return redirect(oid.get_next_url())
+
+
+# Application
 
 @app.route("/")
 def index():
@@ -92,7 +151,7 @@ def add_comment(year, month, day, title):
     automaticaly generated with the current timestamp.
 
     """
-    def randomize():
+    def random_nick():
         """Create a random string of 6 characters"""
         import random
         from string import uppercase, lowercase, digits
@@ -104,7 +163,14 @@ def add_comment(year, month, day, title):
     if request.method == 'POST':
         action = request.form.get('action')
         if action == 'connect':
-            response_data = [True, {'name': 'user%s' % randomize()}]
+            if g.user:
+                nickname = g.user.nickname or g.user.fullname or g.user.email
+                print 1
+            else:
+                nickname = 'user_%s' % random_nick()
+                print 2
+            print nickname
+            response_data = [True, {'name': nickname}]
         elif action == 'publish':
             doc_id = datetime.date(year, month, day).isoformat() + "-" + title
             event = APTEvent.load(database, doc_id)
@@ -115,11 +181,10 @@ def add_comment(year, month, day, title):
             event.comments.append(comment)
             event.store(database)
             response_data = [True, {}]
-            print "ADDED:", doc_id, comment, event
         else:
             response_data = [True, {}]
     return Response(json.dumps(response_data))
 
 
 if __name__ == "__main__":
-    app.run(host="10.0.0.3", debug=True)
+    app.run(host="192.168.0.3", debug=True)

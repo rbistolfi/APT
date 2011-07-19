@@ -5,20 +5,22 @@
 <h2>{{ event.title }}</h2>
 
 <div id="video">
-  <video src="{{ event.stream }}" autoplay="autoplay" preload="auto" controls="controls">
+  <video src="http://192.168.0.3:8800/video/" autoplay="autoplay" preload="auto" controls="controls">
     Necesitas un navegador con soporte para html5, como Firefox.
   </video>
 
 <div id="comments">
+  {% if g.user %}
+  {{ g.user }}
   <form>
     <textarea id="comment-input"></textarea><br />
     <input type="button" value="Send" id="add-comment" />
   </form>
-
+  {% endif %}
   <ul>
-  {% for comment in event.comments %}
+  {% for comment in event.comments_by_date() %}
     <li>
-      <p>{{ comment["published"] }} - {{ comment["author"]|safe }}</p>
+      <p>{{ comment["published"].strip("Z").replace("T", " ") }} - {{ comment["author"]|safe }}</p>
       <p>{{ comment["text"]|safe }}</p>
     </li>
  {% endfor %}
@@ -28,6 +30,18 @@
 
 <div id="intro">
   <p>{{ event.intro|safe }}</p>
+  <hr />
+  {% if not g.user %}
+  <form action="/login" method=post>
+    {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+      <input type=hidden name=openid value="https://www.google.com/accounts/o8/id">
+      <input type=hidden name=next value="{{ next }}">
+      <input type=submit class=openid value="Login with Google">
+  </form>
+   
+  {% else %}
+  <a href="{{ url_for('logout') }}">Logout</a>
+  {% endif %}
 </div>
 
 <script type="text/javascript">
@@ -52,7 +66,7 @@
       });
 
       // connect to the hookbox server
-      conn = hookbox.connect('http://10.0.0.3:8001/');
+      conn = hookbox.connect('http://127.0.0.1:8001/');
 
       // listen for new messages
       conn.onSubscribed = function(channel_name, subscription) {
