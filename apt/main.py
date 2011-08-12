@@ -9,13 +9,15 @@
 from flask import *
 from flaskext.openid import OpenID
 from apt import *
-import datetime, time, os
+from urllib import unquote
+from time import mktime
+import datetime, time, os, uuid
 
 
 ## Setup
 
 app = Flask(__name__)
-app.config["SECRET_KEY"] = "asd"
+app.config["SECRET_KEY"] = os.urandom(24)
 oid = OpenID(app, "./openid_store")
 
 
@@ -27,9 +29,9 @@ def lookup_current_user():
 
     """
     g.user = None
-    print session
     if 'openid' in session:
         g.user = session["openid"]
+        print session
 
         
 ## View functions
@@ -55,11 +57,12 @@ def create_or_login(resp):
 
     """
     session['openid'] = resp
+    g.uid = session['uid'] = uuid.uuid4()
+    session.premanent = True
     user = resp
     if user is not None:
         flash(u'Successfully signed in')
         g.user = user
-    print session
     return redirect(oid.get_next_url()) 
 
 
@@ -69,6 +72,8 @@ def logout():
 
     """
     session.pop('openid', None)
+    session.pop('uid', None)
+    session.permanent = False
     flash(u'You were signed out')
     return redirect(oid.get_next_url())
 
@@ -85,9 +90,12 @@ def index():
     """
     current_event = APTEvent.in_progress(database)
     if current_event.total_rows:
-        return render_template("event.html", event=current_event.rows.pop())
+        event = current_event.rows.pop()
+    else:
+        event = None
     future_events = APTEvent.from_today(database)
-    return render_template("index.html", events=future_events)
+    past_events = APTEvent.past_events(database)
+    return render_template("index.html", event=event, future_events=future_events, past_events=past_events)
 
 
 @app.route("/<int:year>/<int:month>/<int:day>/<title>", methods=["get", "post"])
@@ -99,21 +107,30 @@ def event(year, month, day, title):
     # handle POST request
     if request.method == "POST":
 
+        # check login
+        if not g.user:
+            return redirect(url_for("login"))
+    
         # get values POSTed by the user
         get = request.form.get
-        hour_start = int(get("hour_start", 0))
-        mins_start = int(get("mins_start", 0))
-        seconds_start = int(get("seconds_start", 0))
-        year_end = int(get("year_end", 2011))
-        month_end = int(get("month_end", 1))
-        day_end = int(get("day_end", 20))
-        hour_end = int(get("hour_end", 0))
-        mins_end = int(get("mins_end", 0))
-        seconds_end = int(get("seconds_end", 0))
 
+        # override default values with those from the form
+        title = get("title")
+        
+        # parse date input fields data
+        datetime_start = get("datetime_start")
+        date, time = datetime_start.split()
+        month, day, year = [ int(i) for i in date.split("/") ]
+        hour_start, mins_start = [ int(i) for i in time.split(":") ]
+
+        datetime_end = get("datetime_end")
+        date, time = datetime_end.split()
+        month_end, day_end, year_end = [ int(i) for i in date.split("/") ]
+        hour_end, mins_end = [ int(i) for i in time.split(":") ]
+        
         # datetime objects
-        date_start = datetime.datetime(year, month, day, hour_start, mins_start, seconds_start)
-        date_end = datetime.datetime(year_end, month_end, day_end, hour_end, mins_end, seconds_end)
+        date_start = datetime.datetime(year, month, day, hour_start, mins_start)
+        date_end = datetime.datetime(year_end, month_end, day_end, hour_end, mins_end)
 
         # build the event object
         event = APTEvent.new(
@@ -121,18 +138,24 @@ def event(year, month, day, title):
             intro = get("intro"),
             stream = get("stream"),
             author = get("author"),
-            date_start = date_start,
-            date_end = date_end)
+            date_start = mktime(date_start.timetuple()),
+            date_end = mktime(date_end.timetuple()))
         event.store(database)
         
         # redirect to the created resource
         return redirect("/%s/%s/%s/%s" % (year, month, day, title))
 
     # handle GET request
+    # unquote wont handle unicode properly
+    title = title.encode("utf-8")
+    while "%" in title:
+        # I know. Wtf, Openid is quoting the url more than once
+        title = unquote(title)
     doc = datetime.date(year, month, day).isoformat() + "-" + title
     event = APTEvent.load(database, doc)
     if not event:
-        return abort(404)
+        # we do this just to get the werkzeug debugger
+        raise Exception("404")
     return render_template("event.html", event=event)
 
 
@@ -141,42 +164,39 @@ def new_event(year, month, day, title):
     """Render a form for creating a new event
 
     """
+    # check login
+    if not g.user:
+        return redirect(url_for("login"))
+    
     return render_template("new_event.html", year=year, month=month, day=day, title=title)
 
 
-@app.route("/<int:year>/<int:month>/<int:day>/<title>/add_comment", methods=["GET", "POST"])
-def add_comment(year, month, day, title):
+@app.route("/add_comment", methods=["GET", "POST"])
+def add_comment():
     """Fetch the document and append the comment to its comments list.
     A comment is a dictionary with an "author" and a "text" key. A "published" key is
     automaticaly generated with the current timestamp.
 
     """
-    def random_nick():
-        """Create a random string of 6 characters"""
-        import random
-        from string import uppercase, lowercase, digits
-        s = list(uppercase + lowercase + digits)
-        random.shuffle(s)
-        return "".join(s[:6])
-    
+   
     response_data = None
     if request.method == 'POST':
         action = request.form.get('action')
         if action == 'connect':
             if g.user:
                 nickname = g.user.nickname or g.user.fullname or g.user.email
-                print 1
             else:
                 nickname = 'user_%s' % random_nick()
-                print 2
-            print nickname
             response_data = [True, {'name': nickname}]
         elif action == 'publish':
-            doc_id = datetime.date(year, month, day).isoformat() + "-" + title
+            print "PUBLISH:: ", session
+            print "PUBLISH:: ", g
+            data = json.loads(request.form.get("payload"))
+            doc_id = data["event"]
             event = APTEvent.load(database, doc_id)
             if not event:
                 return abort(404)
-            comment_text = json.loads(request.form.get("payload"))["text"]
+            comment_text = data["text"]
             comment = dict(author=request.form.get("originator"), text=comment_text)
             event.comments.append(comment)
             event.store(database)
@@ -186,5 +206,28 @@ def add_comment(year, month, day, title):
     return Response(json.dumps(response_data))
 
 
+## Filters
+
+@app.template_filter("format_title")
+def format_title(title):
+    """Replace _ with a space
+
+    """
+    return title.replace("_", " ")
+
+
+## Helpers
+
+def random_nick():
+    """Create a random string of 6 characters
+
+    """
+    import random
+    from string import uppercase, lowercase, digits
+    s = list(uppercase + lowercase + digits)
+    random.shuffle(s)
+    return "".join(s[:6])
+
+
 if __name__ == "__main__":
-    app.run(host="192.168.0.3", debug=True)
+    app.run(host="0.0.0.0", debug=True)

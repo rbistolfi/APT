@@ -1,16 +1,53 @@
 {% extends "main.html" %}
 
 {% block body %}
+<div id="main-intro">
+  <div id="logo"><h1>APT</h1></div>
+  <div id="home_intro">
+    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
+    Etiam eu enim sem. Sed scelerisque tempus lectus eget rhoncus. 
+    Curabitur ac pretium dolor. Nullam lacinia, urna.</p>
+  </div>
+</div>
 
-<p>Presentacion - Texto que describe lpos objetivos del proyecto</p>
-
-<div id="event-list">
-  <h2>Eventos</h2>
+{% if event %}
+<div id="current_event">
+  <!-- <h2 class="event-index">En vivo</h2> -->
   <ul>
-  {% for event in events %}
-    <li>{{ event.date_start.isoformat() }} - {{ event.title }}</li>
+    <li>
+      <a href="{{
+        url_for('event', year=event.get_year(), month=event.get_month(), 
+        day=event.get_day(), title=event.title) 
+        }}">{{ event.title }}</a>
+        <p>{{ event.intro }}</p>
+    </li>
+  </ul>
+</div>
+{% endif %}
+
+<div id="secondary-event">
+<div id="event-next">
+  <h2 class="event-index">Próximamente</h2>
+  <ul>
+  {% for event in future_events %}
+    <li>{{ event.isoformat() }} - {{ event.title }}</li>
   {% endfor %}
   </ul>
+</div>
+
+<div id="event-past">
+  <h2 class="event-index">Anteriores</h2>
+  <ul>
+  {% for event in past_events %}
+    <li>
+      <a href="{{ 
+        url_for('event', year=event.get_year(), month=event.get_month(), 
+        day=event.get_day(), title=event.title)
+        }}">{{ event.isoformat() }} - {{ event.title }}</a>
+    </li>
+  {% endfor %}
+  </ul>
+</div>
 </div>
 
 {% endblock %}

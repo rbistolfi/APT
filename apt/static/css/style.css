@@ -1,9 +1,9 @@
 
-html { font-family: Sans-serif; font-size: 80%; color: #333333; }
-body { margin: 0px auto; width: 90% }
+html { font-family: "Comfortaa", Sans-serif; font-size: 80%; color: #333333; }
+body { margin: 40px auto; width: 80%; max-width: 1000px; background: url("/static/images/obse.jpg") repeat-y }
 h1 { font-size: 20px; color: #AAAAAA; }
-h2 { font-size: 40px; color: #666666; }
-video { margin: 15px 0px; border: solid #CCCCCC 3px; width: 100% }
+h2 { font-size: 40px; font-family: "Comfortaa", sans-serif; color: #666666 }
+video { margin: 15px 0px; border: solid rgb(0,136,170) 1px; width: 100% }
 hr { 1px; border: 1px solid #DDDDDD; margin: 20px 0; }
 div#intro { float: right; width: 30%; margin: 15px 0px}
 div#video { float: left; width: 65% }
@@ -12,7 +12,29 @@ div.flash p { margin: 1px; }
 ul { padding-left: 15px; }
 #comments li { list-style-type: square; color: #AAAAAA; padding: 2px }
 li > p:first-child { color: #AAAAAA; }
-li p { color: #333333; }
+li p { color: #333333; font-weight: bold }
 .fading, .flash { background-color: LightYellow; }
-.flash { margin: 3px; padding: 3px; border: 1px solid Yellow }
+.flash { margin: 3px; padding: 6px; border: 1px solid Yellow }
 input.openid { padding: 4px: margin: 2px; background-color: #DDDDDD; border: solid 1px #CCCCCC }
+
+/* css for timepicker */
+.ui-timepicker-div .ui-widget-header{ margin-bottom: 8px; }
+.ui-timepicker-div dl{ text-align: left; }
+.ui-timepicker-div dl dt{ height: 25px; }
+.ui-timepicker-div dl dd{ margin: -25px 0 10px 65px; }
+.ui-timepicker-div td { font-size: 90%; }
+
+/* main css */
+div#header h1 { font-family: "Comfortaa", sans-serif }
+div#main-intro { clear: both; }
+div#logo { float: right; width: 40%; }
+div#logo h1 {  font-family: "Gloria Hallelujah", cursive; font-size: 120px; padding: 0px; margin: 0px; color: rgb(0, 136,170) }
+div#home_intro { font-family: "Comfortaa", sans-serif; font-size:18px; width: 50%; padding: 50px 10px }
+div#secondary-event { clear: both }
+div#event-next { float: left; width:40% }
+div#event-past { float: right; width:40%; }
+h2.event-index { font-family: "Comfortaa", sans-serif; color: rgb(0, 136, 170); font-size: 30px; }
+div#current_event a, div#current_event a:visited, div#current_event a:active  { font-size: 50px; text-decoration: none; color: #666666; font-weight: bold; font-family: "Comfortaa"; }
+div#current_event a:hover  { font-size: 50px; text-decoration: none; color: rgb(0, 136, 170); font-weight: bold; font-family: "Comfortaa"; }
+div#current_event p { font-family: "Comfortaa", sans-serif; font-size:18px; }
+div#current_event ul li { list-style: none; }

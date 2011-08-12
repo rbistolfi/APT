@@ -1,8 +1,12 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link href='http://fonts.googleapis.com/css?family=Gloria+Hallelujah|Comfortaa' rel='stylesheet' type='text/css'>
     <link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/style.css') }}">
-    <script type=text/javascript src="/static/js/jquery.js"></script>
+    <link rel=stylesheet type=text/css href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/themes/smoothness/jquery-ui.css">
+    <script type=text/javascript src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script type=text/javascript src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.15/jquery-ui.min.js"></script>
+    <script type=text/javascript src="/static/js/jquery-ui-timepicker-addon.js"></script>
     <script type=text/javascript src="/static/js/hookbox.js"></script>
 </head>
 <body>
@@ -14,11 +18,8 @@
 	{% if g.user %}
 	{{ g.user.nickname or g.user.fullname or g.user.email }}: 
 	{% endif %}
-	{{ message }} | 
-	{% if g.user %}
-	<a href="{{ url_for('logout') }}">Logout</a> |
-	{% endif %}
-	<a style="cursor: pointer">[x]</a>
+	{{ message }}
+	<span style="float: right"><a style="cursor: pointer">[x]</a></span>
       </p>
     </div>
     {% endfor %}
@@ -32,7 +33,7 @@
   <script type="text/javascript">
     $("div.flash a").click(
       function () {
-        $("div.flash").slideUp().fadeOut();
+        $("div.flash").animate({opacity: 'hide', height: 'hide'}, 'fast');
       });
   </script>
 </body>

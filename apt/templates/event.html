@@ -2,7 +2,7 @@
 
 {% block body %}
 
-<h2>{{ event.title }}</h2>
+<h2>{{ event.title|format_title }}</h2>
 
 <div id="video">
   <video src="http://192.168.0.3:8800/video/" autoplay="autoplay" preload="auto" controls="controls">
@@ -11,16 +11,15 @@
 
 <div id="comments">
   {% if g.user %}
-  {{ g.user }}
   <form>
-    <textarea id="comment-input"></textarea><br />
-    <input type="button" value="Send" id="add-comment" />
+    <textarea id="comment-input"></textarea>
+    <input type="button" value="Enviar" id="add-comment" />
   </form>
   {% endif %}
   <ul>
   {% for comment in event.comments_by_date() %}
     <li>
-      <p>{{ comment["published"].strip("Z").replace("T", " ") }} - {{ comment["author"]|safe }}</p>
+      <p>{{ comment["published"].strip("Z").replace("T", " ") | safe }}</p>
       <p>{{ comment["text"]|safe }}</p>
     </li>
  {% endfor %}
@@ -30,7 +29,15 @@
 
 <div id="intro">
   <p>{{ event.intro|safe }}</p>
-  <hr />
+  {% if event.related_links %}
+  <h4>Más información</h4>
+  <ul>
+  {% for link in event.related_links %}
+    <li><a href="{{ link }}">{{ link }}</a></li>
+  {% endfor %}
+  </ul>
+  {% endif %}
+  <br />
   {% if not g.user %}
   <form action="/login" method=post>
     {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
@@ -47,24 +54,14 @@
 <script type="text/javascript">
     $( function () {
       function addComment(msg) {
-        var published = new Date(msg.payload.published) ;
-        time = [ published.getHours(), published.getMinutes(), published.getSeconds() ].join(':')
-        $('<li><p>' + time + " - " + msg.user + '</p><p>' + 
-        msg.payload.text + '</p></li>').addClass("fading").prependTo(
-        '#comments ul').hide().fadeIn('fast', function () { 
-        $("li.fading").removeClass("fading"); })
+        published = new Date(msg.payload.published) ;
+        time = [ published.getHours(), published.getMinutes(), published.getSeconds() ].join(':');
+        comment = $('<li><p>' + time + '</p><p>' + msg.payload.text + '</p></li>');
+        comment.addClass("fading");
+        comment.prependTo('#comments ul');
+        comment.hide();
+        comment.fadeIn('fast', function () { $("li.fading").removeClass("fading"); });
       }
-
-      $('#add-comment').click(function(e) {
-        var commentInput = $('#comment-input');
-        var published = new Date;
-        comment = {"published": published, "text": commentInput.val()};
-        conn.publish('{{ event.id }}', comment);
-        commentInput.val('');
-        $('#comment-input').focus();
-        return false;
-      });
-
       // connect to the hookbox server
       conn = hookbox.connect('http://127.0.0.1:8001/');
 
@@ -77,7 +74,27 @@
 
       // subscribe to this event's channel
       conn.subscribe('{{ event.id }}');
+    
+    {% if g.user %}
+      // publish on submit
+      $('#add-comment').click(function(e) {
+        var commentInput = $('#comment-input');
+        var published = new Date();
+        comment = {"published": published, "text": commentInput.val(), event: "{{ event.id }}", user: "{{ session.uid }}"};
+        conn.publish('{{ event.id }}', comment);
+        commentInput.val('');
+        $('#comment-input').focus();
+        return false;
+      });
+    {% endif %}
     });
+    
+    // Improve textarea
+    $("#comment-input").resizable({handles: "se"});
+    $("#add-comment").button()
+    $("a[href$='logout']").button()
+    $("input[type='submit']").button()
 </script>
  
 {% endblock %}
+

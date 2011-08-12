@@ -1,0 +1,54 @@
+{% extends "main.html" %}
+
+{% block body %}
+
+<h2>Crear Evento</h2>
+
+<form action="{{ url_for('event', year=year, month=month, day=day, title=title) }}" method="post">
+  <div id="accordion">
+    <h3><a href="#">Evento</a></h3>
+    <div>
+      <div style="width: 45%; float: left">
+	<label for="title">Titulo</label><br />
+	<input type="text" value="{{ title }}" name="title" id="title" /><br />
+ 	<label for="author">Creado por</label><br />
+	<input type="text" id="author" name="author" /><br />
+      </div>
+      <div>
+	<label for="intro">Descripcion</label><br />
+	<textarea id="intro" name="intro"></textarea><br />
+      </div>
+   </div>
+    <h3><a href="#">Fechas</a></h3>
+    <div>
+      <div style="float: left; width: 45%">
+	<label for="datetime_start">Fecha y hora de inicio</label><br />
+	<input class ="time" type="text" name="datetime_start" id="datetime_start" value="{{ '/'.join([day, month, year]) }}" /><br />
+      </div>
+      <div>
+	<label for="datetime_end">Fecha y hora de finalizacion</label><br />
+	<input class="time" type="text" name="datetime_end" id="datetime_end" value="{{ '/'.join([day, month, year]) }}" /><br />
+      </div>
+    </div>
+    <h3><a href="#">Video</a></h3>
+    <div>
+      <label for="stream">Url del Video</label><br />
+      <input type="text" name="stream" id="stream" /><br />
+    </div>
+  </div>
+  <div id="button" style="margin: 20px 0px">
+    <input type="submit" value="Guardar" />
+  </div>
+</form>
+
+<script type="text/javascript">
+$("#accordion").accordion();
+$("input:submit").button();
+$.datepicker.setDefaults($.datepicker.regional["es"]);
+$.datepicker.formatDate("dd-mm-yyyy");
+$('.time').datetimepicker({
+	regional: 'es'
+});
+</script>
+
+{% endblock %}
