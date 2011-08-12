@@ -3,9 +3,9 @@ html { font-family: "Comfortaa", Sans-serif; font-size: 80%; color: #333333; }
 body { margin: 40px auto; width: 80%; max-width: 1000px; background: url("/static/images/obse.jpg") repeat-y }
 h1 { font-size: 20px; color: #AAAAAA; }
 h2 { font-size: 40px; font-family: "Comfortaa", sans-serif; color: #666666 }
-video { margin: 15px 0px; border: solid rgb(0,136,170) 1px; width: 100% }
+video { margin: 15px 0px; border: solid #CCCCCC 1px; width: 100%; background: #EEEEEE; padding: 30px 20px }
 hr { 1px; border: 1px solid #DDDDDD; margin: 20px 0; }
-div#intro { float: right; width: 30%; margin: 15px 0px}
+div#intro { float: right; width: 25%; margin: 15px 0px}
 div#video { float: left; width: 65% }
 div#footer { clear: both; }
 div.flash p { margin: 1px; }
