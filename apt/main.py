@@ -119,22 +119,11 @@ def event(year, month, day, title):
         # override default values with those from the form
         title = get("title")
         
-        # parse date input fields data
-        datetime_start = get("datetime_start")
-        date, time = datetime_start.split()
-        month, day, year = [ int(i) for i in date.split("/") ]
-        hour_start, mins_start = [ int(i) for i in time.split(":") ]
-
-        datetime_end = get("datetime_end")
-        date, time = datetime_end.split()
-        month_end, day_end, year_end = [ int(i) for i in date.split("/") ]
-        hour_end, mins_end = [ int(i) for i in time.split(":") ]
-        
         # datetime objects
-        date_start = datetime.datetime(year, month, day, hour_start, mins_start)
-        date_end = datetime.datetime(year_end, month_end, day_end, hour_end, mins_end)
+        date_start = datetime.datetime.strptime(get("datetime_start"), "%m/%d/%Y %H:%M")
+        date_end = datetime.datetime.strptime(get("datetime_end"), "%m/%d/%Y %H:%M")
 
-        # get related links
+        # get the 4 related links, if they are defined
         urls = [ get("rel_link%s" % i) for i in xrange(1,5) ]
         descs = [ get("desc_link%s" % i) for i in xrange(1,5) ]
         links = [ dict(url=url, description=desc) for url, desc in zip(urls, descs) if url ]
@@ -151,7 +140,7 @@ def event(year, month, day, title):
         event.store(database)
         
         # redirect to the created resource
-        return redirect("/%s/%s/%s/%s" % (year, month, day, title))
+        return redirect("/%s/%s/%s/%s" % (date_start.year, date_start.month, date_start.day, title))
 
     # handle GET request
     # unquote wont handle unicode properly
