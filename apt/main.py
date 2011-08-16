@@ -88,11 +88,13 @@ def index():
     Show a list of future events otherwise.
 
     """
+    # check for a running event
     current_event = APTEvent.in_progress(database)
     if current_event.total_rows:
         event = current_event.rows.pop()
     else:
         event = None
+    # lookup future and past events
     future_events = APTEvent.from_today(database)
     past_events = APTEvent.past_events(database)
     return render_template("index.html", event=event, future_events=future_events, past_events=past_events)
@@ -132,6 +134,11 @@ def event(year, month, day, title):
         date_start = datetime.datetime(year, month, day, hour_start, mins_start)
         date_end = datetime.datetime(year_end, month_end, day_end, hour_end, mins_end)
 
+        # get related links
+        urls = [ get("rel_link%s" % i) for i in xrange(1,5) ]
+        descs = [ get("desc_link%s" % i) for i in xrange(1,5) ]
+        links = [ dict(url=url, description=desc) for url, desc in zip(urls, descs) if url ]
+        
         # build the event object
         event = APTEvent.new(
             title = title,
@@ -139,7 +146,8 @@ def event(year, month, day, title):
             stream = get("stream"),
             author = get("author"),
             date_start = mktime(date_start.timetuple()),
-            date_end = mktime(date_end.timetuple()))
+            date_end = mktime(date_end.timetuple()),
+            related_links = links)
         event.store(database)
         
         # redirect to the created resource
@@ -178,11 +186,13 @@ def add_comment():
     automaticaly generated with the current timestamp.
 
     """
-   
+
     response_data = None
     if request.method == 'POST':
+        # handle the different actions defined by hookbox protocol
         action = request.form.get('action')
         if action == 'connect':
+            # assign a nickname to the new user on connect
             if g.user:
                 nickname = g.user.nickname or g.user.fullname or g.user.email
             else:

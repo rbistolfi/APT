@@ -10,7 +10,7 @@
     <div>
       <div style="width: 45%; float: left">
 	<label for="title">Titulo</label><br />
-	<input type="text" value="{{ title }}" name="title" id="title" /><br />
+	<input class="wide" type="text" value="{{ title }}" name="title" id="title" /><br />
  	<label for="author">Creado por</label><br />
 	<input type="text" id="author" name="author" /><br />
       </div>
@@ -32,8 +32,31 @@
     </div>
     <h3><a href="#">Video</a></h3>
     <div>
-      <label for="stream">Url del Video</label><br />
-      <input type="text" name="stream" id="stream" /><br />
+        <label for="stream">Url del Video</label><br />
+        <input class="wide" type="text" name="stream" id="stream" /><br />
+    </div>
+    <h3><a href="#">Links</a></h3>
+    <div> 
+      <div style="float: left; width: 45%">
+        <label_for="rel_link1">Link relacionado #1</label><br />
+        <input class="wide" type="text" name="rel_link1" /><br />
+        <label_for="rel_link2">Link relacionado #2</label><br />
+        <input class="wide" type="text" name="rel_link2" /><br />
+        <label_for="rel_link3">Link relacionado #3</label><br />
+        <input class="wide" type="text" name="rel_link3" /><br />
+        <label_for="rel_link4">Link relacionado #4</label><br />
+        <input class="wide" type="text" name="rel_link4" />
+      </div>
+      <div style="float: left; width: 55%">
+        <label_for="desc_link1">Descripción #1</label><br />
+        <input class="wide" type="text" name="desc_link1" /><br />
+        <label_for="desc_link2">Descripción #2</label><br />
+        <input class="wide" type="text" name="desc_link2" /><br />
+        <label_for="desc_link3">Descripción #3</label><br />
+        <input class="wide" type="text" name="desc_link3" /><br />
+        <label_for="desc_link4">Descripción #4</label><br />
+        <input class="wide" type="text" name="desc_link4" />
+      </div>
     </div>
   </div>
   <div id="button" style="margin: 20px 0px">
@@ -42,13 +65,13 @@
 </form>
 
 <script type="text/javascript">
-$("#accordion").accordion();
-$("input:submit").button();
-$.datepicker.setDefaults($.datepicker.regional["es"]);
-$.datepicker.formatDate("dd-mm-yyyy");
-$('.time').datetimepicker({
-	regional: 'es'
-});
+  $("#accordion").accordion();
+  $("input:submit").button();
+  $.datepicker.setDefaults($.datepicker.regional["es"]);
+  $.datepicker.formatDate("dd-mm-yyyy");
+  $('.time').datetimepicker({
+  	regional: 'es'
+  });
 </script>
 
 {% endblock %}

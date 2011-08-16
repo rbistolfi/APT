@@ -30,10 +30,10 @@
 <div id="intro">
   <p>{{ event.intro|safe }}</p>
   {% if event.related_links %}
-  <h4>Más información</h4>
+  <h4>Más información:</h4>
   <ul>
   {% for link in event.related_links %}
-    <li><a href="{{ link }}">{{ link }}</a></li>
+    <li><a href="{{ link.url }}">{{ link.description }}</a></li>
   {% endfor %}
   </ul>
   {% endif %}
@@ -63,7 +63,7 @@
         comment.fadeIn('fast', function () { $("li.fading").removeClass("fading"); });
       }
       // connect to the hookbox server
-      conn = hookbox.connect('http://127.0.0.1:8001/');
+      conn = hookbox.connect('http://rbistolfi.dyndns.org:8080/');
 
       // listen for new messages
       conn.onSubscribed = function(channel_name, subscription) {
