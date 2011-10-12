@@ -33,10 +33,10 @@ def lookup_current_user():
         g.user = session["openid"]
         print session
 
-        
+
 ## View functions
 # User handling
-        
+
 @app.route('/login', methods=['GET', 'POST'])
 @oid.loginhandler
 def login():
@@ -63,7 +63,7 @@ def create_or_login(resp):
     if user is not None:
         flash(u'Successfully signed in')
         g.user = user
-    return redirect(oid.get_next_url()) 
+    return redirect(oid.get_next_url())
 
 
 @app.route('/logout')
@@ -112,13 +112,13 @@ def event(year, month, day, title):
         # check login
         if not g.user:
             return redirect(url_for("login"))
-    
+
         # get values POSTed by the user
         get = request.form.get
 
         # override default values with those from the form
         title = get("title")
-        
+
         # datetime objects
         date_start = datetime.datetime.strptime(get("datetime_start"), "%m/%d/%Y %H:%M")
         date_end = datetime.datetime.strptime(get("datetime_end"), "%m/%d/%Y %H:%M")
@@ -127,7 +127,7 @@ def event(year, month, day, title):
         urls = [ get("rel_link%s" % i) for i in xrange(1,5) ]
         descs = [ get("desc_link%s" % i) for i in xrange(1,5) ]
         links = [ dict(url=url, description=desc) for url, desc in zip(urls, descs) if url ]
-        
+
         # build the event object
         event = APTEvent.new(
             title = title,
@@ -138,7 +138,7 @@ def event(year, month, day, title):
             date_end = mktime(date_end.timetuple()),
             related_links = links)
         event.store(database)
-        
+
         # redirect to the created resource
         return redirect("/%s/%s/%s/%s" % (date_start.year, date_start.month, date_start.day, title))
 
@@ -164,7 +164,7 @@ def new_event(year, month, day, title):
     # check login
     if not g.user:
         return redirect(url_for("login"))
-    
+
     return render_template("new_event.html", year=year, month=month, day=day, title=title)
 
 
@@ -188,8 +188,6 @@ def add_comment():
                 nickname = 'user_%s' % random_nick()
             response_data = [True, {'name': nickname}]
         elif action == 'publish':
-            print "PUBLISH:: ", session
-            print "PUBLISH:: ", g
             data = json.loads(request.form.get("payload"))
             doc_id = data["event"]
             event = APTEvent.load(database, doc_id)
