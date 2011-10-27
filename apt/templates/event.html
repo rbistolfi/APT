@@ -64,7 +64,7 @@
         comment.fadeIn('fast', function () { $("li.fading").removeClass("fading"); });
       }
       // connect to the hookbox server
-      conn = hookbox.connect('http://127.0.0.1:8001/');
+      conn = hookbox.connect('http://ns.oac.uncor.edu:8082/');)
 
       // listen for new messages
       conn.onSubscribed = function(channel_name, subscription) {
