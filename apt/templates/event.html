@@ -2,53 +2,54 @@
 
 {% block body %}
 
-<h2>{{ event.title|format_title }}</h2>
+<div class="container">
+    <h1 class="event_title">{{ event.title|format_title }}</h1>
+    <div class="row">
+        <div id="video" class="span11">
+            <video src="{{ event.stream }}" autoplay="autoplay" preload="auto" controls="controls">
+            Necesitas un navegador con soporte para html5, como Firefox.</video>
 
-<div id="video">
-    <video src="{{ event.stream }}" autoplay="autoplay" preload="auto" controls="controls">
-    Necesitas un navegador con soporte para html5, como Firefox.
-  </video>
-
-<div id="comments">
-  {% if g.user %}
-  <form>
-    <textarea id="comment-input"></textarea>
-    <input type="button" value="Enviar" id="add-comment" />
-  </form>
-  {% endif %}
-  <ul>
-  {% for comment in event.comments_by_date() %}
-    <li>
-      <p>{{ comment["published"].strip("Z").replace("T", " ") | safe }}</p>
-      <p>{{ comment["text"]|safe }}</p>
-    </li>
- {% endfor %}
-  </ul>
-</div>
-</div>
-
-<div id="intro">
-  <p>{{ event.intro|safe }}</p>
-  {% if event.related_links %}
-  <h4>Más información:</h4>
-  <ul>
-  {% for link in event.related_links %}
-    <li><a href="{{ link.url }}">{{ link.description }}</a></li>
-  {% endfor %}
-  </ul>
-  {% endif %}
-  <br />
-  {% if not g.user %}
-  <form action="{{ url_for('login') }}" method=post>
-    {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
-      <input type=hidden name=openid value="https://www.google.com/accounts/o8/id">
-      <input type=hidden name=next value="{{ next }}">
-      <input type=submit class=openid value="Login with Google">
-  </form>
+            <div id="comments">
+                {% if g.user %}
+                <form>
+                    <textarea id="comment-input"></textarea>
+                    <input type="button" value="Enviar" id="add-comment" />
+                </form>
+                {% endif %}
+                <ul>
+                    {% for comment in event.comments_by_date() %}
+                    <li>
+                        <p>{{ comment["published"].strip("Z").replace("T", " ") | safe }}</p>
+                        <p>{{ comment["text"]|safe }}</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        <div id="intro" class="span4">
+            <p>{{ event.intro|safe }}</p>
+            {% if event.related_links %}
+                <h4>Más información:</h4>
+                <ul>
+                {% for link in event.related_links %}
+                    <li><a href="{{ link.url }}">{{ link.description }}</a></li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+            <br />
+            {% if not g.user %}
+            <form action="{{ url_for('login') }}" method=post>
+                {% if error %}<p class=error><strong>Error:</strong> {{ error }}</p>{% endif %}
+                <input type=hidden name=openid value="https://www.google.com/accounts/o8/id">
+                <input type=hidden name=next value="{{ next }}">
+                <input type=submit class=openid value="Login with Google">
+            </form>
    
-  {% else %}
-  <a href="{{ url_for('logout') }}">Logout</a>
-  {% endif %}
+            {% else %}
+            <a href="{{ url_for('logout') }}">Logout</a>
+            {% endif %}
+        </div>
+    </div>
 </div>
 
 <script type="text/javascript">

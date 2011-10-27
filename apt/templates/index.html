@@ -1,54 +1,65 @@
 {% extends "main.html" %}
 
 {% block body %}
-<div id="main-intro">
-  <div id="logo"><h1>APT</h1></div>
-  <div id="home_intro">
-    <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. 
-    Etiam eu enim sem. Sed scelerisque tempus lectus eget rhoncus. 
-    Curabitur ac pretium dolor. Nullam lacinia, urna.</p>
-  </div>
-</div>
+    <div class="row">
+        <div class="span16 dark">
+            <div class="row">
+                <div class="span6">
+                    ·
+                </div>
+                <div class="span10">
+                    <h1>Astronomía para todos</h1>
+                    <p>Bienvenido. El Observatorio Astronómico de Córdoba,
+                    fundado el 24 de Octubre de 1871, tiene como objetivos la
+                    investigación, enseñanza y extensión de la astronomía.
+                    Depende de la Universidad de Nacional de Córdoba. Desde
+                    aquí transmite en vivo las imágenes producidas por su
+                    telescopio. 
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="events">
+        <div class="span6 live">
+            <h2>En vivo</h2>
+                {% if event %}
+                <ul>
+                    <li>
+                        <a href="{{
+                        url_for('event', year=event.get_year(), month=event.get_month(), 
+                        day=event.get_day(), title=event.title) 
+                        }}">{{ event.title }}</a>
+                        <span class="label success"> AHORA </span>
+                        <p>{{ event.intro }}</p>
+                    </li>
+                </ul>
+                {% endif %}
+        </div>
+        <div class="span5">
+            <h2>Próximamente</h2>
+                <ul>
+                {% for event in future_events %}
+                    <li>{{ event.isoformat() }} - {{ event.title }}
+                        <p>{{ event.intro }}</p>
+                    </li>
+                {% endfor %}
+                </ul>
+        </div>
+        <div class="span5">
+            <h2>Anteriores</h2>
+            <ul>
+            {% for event in past_events %}
+                <li>
+                    <a href="{{ 
+                    url_for('event', year=event.get_year(), month=event.get_month(), 
+                    day=event.get_day(), title=event.title)
+                    }}">{{ event.isoformat() }} - {{ event.title }}</a>
+                    <p>{{ event.intro }}</p>
+                </li>
+            {% endfor %}
+            </ul>
 
-<h1>Eventos</h1>
-{% if event %}
-<div id="current_event">
-  <!-- <h2 class="event-index">En vivo</h2> -->
-  <ul>
-    <li>
-      <a href="{{
-        url_for('event', year=event.get_year(), month=event.get_month(), 
-        day=event.get_day(), title=event.title) 
-        }}">{{ event.title }}</a>
-        <p>{{ event.intro }}</p>
-    </li>
-  </ul>
-</div>
-{% endif %}
-
-<div id="secondary-event">
-<div id="event-next">
-  <h2 class="event-index">Próximamente</h2>
-  <ul>
-  {% for event in future_events %}
-    <li>{{ event.isoformat() }} - {{ event.title }}</li>
-  {% endfor %}
-  </ul>
-</div>
-
-<div id="event-past">
-  <h2 class="event-index">Anteriores</h2>
-  <ul>
-  {% for event in past_events %}
-    <li>
-      <a href="{{ 
-        url_for('event', year=event.get_year(), month=event.get_month(), 
-        day=event.get_day(), title=event.title)
-        }}">{{ event.isoformat() }} - {{ event.title }}</a>
-    </li>
-  {% endfor %}
-  </ul>
-</div>
-</div>
-
+        </div>
+    </div>
 {% endblock %}
