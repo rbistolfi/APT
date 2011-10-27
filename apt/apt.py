@@ -102,6 +102,12 @@ class APTEvent(Document):
         """
         return datetime.datetime.fromtimestamp(self.date_start).isoformat()
 
+    def timestamp(self):
+        """Timestamp with tz info
+        
+        """
+        return datetime.datetime.fromtimestamp(self.date_start - 10800)
+
 
 database = Database("apt")
 APTEvent.from_today.sync(database)
