@@ -11,7 +11,7 @@ input.wide { width: 90%; }
 .ui-timepicker-div td { font-size: 90%; }
 
 /* main css */
-body { padding: 40px }
+body { padding: 40px 0 }
 div.dark { background: #333333 url(/static/images/moon.jpg) repeat scroll -150% 50%; 
     color: #FFFFFF; margin: 40px 0px;
     padding: 40px 20px; border-radius: 6px; }
